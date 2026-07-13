@@ -22,9 +22,7 @@ export const Navbar: React.FC = () => {
         <Button variant={location.pathname === '/calendar' ? 'default' : 'ghost'} className="step-nav-calendar" asChild>
           <Link to="/calendar">{t.calendar}</Link>
         </Button>
-        <Button variant={location.pathname === '/admin' ? 'default' : 'ghost'} asChild>
-          <Link to="/admin">{t.admin}</Link>
-        </Button>
+
       </div>
       <div className="step-lang flex gap-1">
         {langs.map(l => (
