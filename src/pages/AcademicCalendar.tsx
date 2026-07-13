@@ -39,6 +39,7 @@ const allEvents: CalendarEvent[] = [
   { start: '2027-06-21', end: '2027-06-21', title: 'Pembagian Hadiah', type: 'event' },
   { start: '2027-06-25', end: '2027-06-25', title: 'Pembagian Raport Kenaikan Kelas', type: 'meeting' },
   { start: '2027-06-26', end: '2027-07-10', title: 'Libur Semester Genap', type: 'holiday' },
+  { start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0], title: '(Demo) Kegiatan Belajar', type: 'event' },
 ];
 
 const getEventIcon = (type: string) => {
@@ -78,8 +79,10 @@ const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 export const AcademicCalendar: React.FC = () => {
   const { t } = useAppContext();
   
-  // Start in July 2026
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 6, 1));
+  // Start at current month
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  const today = new Date();
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -111,11 +114,13 @@ export const AcademicCalendar: React.FC = () => {
       return dateStr >= ev.start && dateStr <= ev.end;
     });
 
+    const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
+
     return (
       <Dialog key={day}>
         <DialogTrigger asChild>
-          <div className="border border-border min-h-[80px] p-1 flex flex-col items-start bg-card transition-colors hover:bg-slate-50 cursor-pointer hover:border-primary/50 group relative">
-            <span className={`text-sm font-medium p-1 rounded-full w-7 h-7 flex items-center justify-center ${dayEvents.length > 0 ? 'bg-primary/10 text-primary' : 'text-foreground'}`}>
+          <div className={`border border-border min-h-[80px] p-1 flex flex-col items-start bg-card transition-colors hover:bg-slate-50 cursor-pointer hover:border-primary/50 group relative ${isToday ? 'ring-2 ring-primary ring-inset bg-primary/5' : ''}`}>
+            <span className={`text-sm font-medium p-1 rounded-full w-7 h-7 flex items-center justify-center ${isToday ? 'bg-primary text-primary-foreground' : dayEvents.length > 0 ? 'bg-primary/10 text-primary' : 'text-foreground'}`}>
               {day}
             </span>
             <div className="flex flex-col gap-1 w-full mt-1">
@@ -162,6 +167,27 @@ export const AcademicCalendar: React.FC = () => {
                   <p className="font-medium text-red-700">Libur Nasional / Sekolah</p>
                   <p className="text-sm text-red-600 mt-1">Tidak ada kegiatan belajar mengajar.</p>
                 </div>
+              ) : dayEvents.some(e => e.title.includes('(Demo)')) ? (
+                <>
+                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
+                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                      <BookOpen className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Matematika</p>
+                      <p className="text-sm text-muted-foreground">Belajar berhitung angka 1-20 dengan media interaktif.</p>
+                    </div>
+                  </div>
+                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
+                    <div className="p-2 bg-orange-100 rounded-lg shrink-0">
+                      <PartyPopper className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Seni Budaya</p>
+                      <p className="text-sm text-muted-foreground">Mewarnai pemandangan alam dan bernyanyi bersama.</p>
+                    </div>
+                  </div>
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-6 opacity-60 bg-muted/20 border rounded-lg border-dashed">
                   <CalendarIcon className="w-8 h-8 text-muted-foreground mb-3" />

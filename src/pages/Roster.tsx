@@ -37,11 +37,23 @@ export const Roster: React.FC = () => {
     return <div className="flex justify-center p-8">Memuat daftar siswa...</div>;
   }
 
+  const dummyStudent: Student = {
+    id: 9999,
+    name: "(Demo) Siswa Prototype",
+    phone: "081234567890",
+    photo: "https://images.unsplash.com/photo-1519340333755-56e9c1d04079?w=400&q=80",
+    birthday: "17 Agustus 2019",
+    hobby: "Membaca & Menggambar",
+    notes: "Dummy student"
+  };
+
+  const displayStudents = [...students, dummyStudent];
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6 text-primary">{t.roster}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {students.map(s => (
+        {displayStudents.map(s => (
           <Dialog key={s.id}>
             <DialogTrigger asChild>
               <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
@@ -80,24 +92,79 @@ export const Roster: React.FC = () => {
               </Card>
             </DialogTrigger>
             
-            <DialogContent className="max-w-md text-center p-8">
-              <DialogHeader>
-                <DialogTitle className="text-center">Raport Online: {s.name}</DialogTitle>
-                <DialogDescription className="text-center">
-                  Fitur ini masih dalam tahap pengembangan.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="flex flex-col items-center justify-center py-8 opacity-60">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                  <Heart className="w-8 h-8 text-muted-foreground" />
+            {s.id === 9999 ? (
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Raport Online: {s.name}</DialogTitle>
+                  <DialogDescription>Laporan perkembangan harian, mingguan, dan bulanan (Versi Prototype)</DialogDescription>
+                </DialogHeader>
+                
+                <div className="grid gap-4 py-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-16 h-16 border-2 border-primary/20">
+                      <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
+                      <AvatarFallback className="rounded-lg text-lg font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold">{s.name}</h4>
+                      <p className="text-sm text-muted-foreground">Tanggal Lahir: {s.birthday || '-'}</p>
+                      <p className="text-sm text-muted-foreground">Hobi: {s.hobby || '-'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-muted/30 p-4 rounded-lg border">
+                    <h4 className="font-semibold mb-2">Laporan Harian (Hari Ini)</h4>
+                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                      <li>Hadir tepat waktu (06:45 WIB)</li>
+                      <li>Sangat aktif dalam sesi tanya jawab Matematika</li>
+                      <li>Membawa bekal sehat dan menghabiskan makan siangnya</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-muted/30 p-4 rounded-lg border">
+                    <h4 className="font-semibold mb-2">Nilai Mingguan</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span>Membaca & Menulis</span>
+                        <Badge variant="default" className="bg-green-500">A (Sangat Baik)</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Berhitung</span>
+                        <Badge variant="default" className="bg-blue-500">B+ (Baik)</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Seni & Kreativitas</span>
+                        <Badge variant="default" className="bg-purple-500">A (Sangat Baik)</Badge>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                    <h4 className="font-semibold mb-2 text-primary">Catatan Guru Bulan Ini</h4>
+                    <p className="text-sm text-slate-700 italic">"{s.name} menunjukkan perkembangan yang sangat pesat dalam kemampuan berhitung dan selalu ceria saat bermain bersama teman-teman."</p>
+                  </div>
                 </div>
-                <h3 className="font-medium text-lg mb-1">Segera Hadir</h3>
-                <p className="text-sm text-muted-foreground max-w-[250px]">
-                  Laporan perkembangan harian, mingguan, dan bulanan siswa akan segera ditambahkan di sini.
-                </p>
-              </div>
-            </DialogContent>
+              </DialogContent>
+            ) : (
+              <DialogContent className="max-w-md text-center p-8">
+                <DialogHeader>
+                  <DialogTitle className="text-center">Raport Online: {s.name}</DialogTitle>
+                  <DialogDescription className="text-center">
+                    Fitur ini masih dalam tahap pengembangan.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="flex flex-col items-center justify-center py-8 opacity-60">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <Heart className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-medium text-lg mb-1">Segera Hadir</h3>
+                  <p className="text-sm text-muted-foreground max-w-[250px]">
+                    Laporan perkembangan harian, mingguan, dan bulanan siswa akan segera ditambahkan di sini.
+                  </p>
+                </div>
+              </DialogContent>
+            )}
           </Dialog>
         ))}
       </div>
