@@ -6,6 +6,8 @@ import { Home } from './pages/Home';
 import { Roster } from './pages/Roster';
 import { AcademicCalendar } from './pages/AcademicCalendar';
 import { Admin } from './pages/Admin';
+import { Tutorial } from './components/Tutorial';
+
 
 const App: React.FC = () => {
   return (
@@ -25,6 +27,7 @@ const App: React.FC = () => {
               <Route path="/calendar" element={<AcademicCalendar />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
+            <Tutorial />
           </div>
         </div>
       </Router>

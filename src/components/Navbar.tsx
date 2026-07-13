@@ -16,17 +16,17 @@ export const Navbar: React.FC = () => {
         <Button variant={location.pathname === '/' ? 'default' : 'ghost'} asChild>
           <Link to="/">{t.home}</Link>
         </Button>
-        <Button variant={location.pathname === '/roster' ? 'default' : 'ghost'} asChild>
+        <Button variant={location.pathname === '/roster' ? 'default' : 'ghost'} className="step-nav-roster" asChild>
           <Link to="/roster">{t.roster}</Link>
         </Button>
-        <Button variant={location.pathname === '/calendar' ? 'default' : 'ghost'} asChild>
+        <Button variant={location.pathname === '/calendar' ? 'default' : 'ghost'} className="step-nav-calendar" asChild>
           <Link to="/calendar">{t.calendar}</Link>
         </Button>
         <Button variant={location.pathname === '/admin' ? 'default' : 'ghost'} asChild>
           <Link to="/admin">{t.admin}</Link>
         </Button>
       </div>
-      <div className="flex gap-1">
+      <div className="step-lang flex gap-1">
         {langs.map(l => (
           <Button 
             key={l} 

@@ -19,7 +19,17 @@ export const translations = {
     birthday: 'Tanggal Lahir',
     invalidNumber: 'Nomor Tidak Valid',
     noNumber: 'Tidak Ada Nomor',
-    transferred: 'Mutasi'
+    transferred: 'Mutasi',
+    tourWelcome: 'Selamat datang di Website Kelas 1! Mari kita mulai tur singkat.',
+    tourLang: 'Ubah bahasa di sini (Indonesia, Inggris, Urdu).',
+    tourRoster: 'Lihat daftar lengkap siswa dan profil mereka.',
+    tourCalendar: 'Cek kalender akademik dan hari libur.',
+    tourDate: 'Ganti tanggal untuk melihat kegiatan di hari lain (lampau atau masa depan).',
+    tourCards: 'Informasi jadwal, PR, seragam, dan sorotan kelas.',
+    tourNext: 'Lanjut',
+    tourBack: 'Kembali',
+    tourClose: 'Tutup',
+    tourSkip: 'Lewati'
   },
   en: {
     home: 'Home',
@@ -39,7 +49,17 @@ export const translations = {
     birthday: 'Birthday',
     invalidNumber: 'Invalid Number',
     noNumber: 'No Number',
-    transferred: 'Transferred'
+    transferred: 'Transferred',
+    tourWelcome: 'Welcome to the Class 1 Website! Let\'s take a quick tour.',
+    tourLang: 'Change the language here (Indonesian, English, Urdu).',
+    tourRoster: 'View the complete student roster and profiles.',
+    tourCalendar: 'Check the academic calendar and holidays.',
+    tourDate: 'Change the date to view activities on other days (past or future).',
+    tourCards: 'Information about schedule, homework, uniform, and highlights.',
+    tourNext: 'Next',
+    tourBack: 'Back',
+    tourClose: 'Close',
+    tourSkip: 'Skip'
   },
   ur: {
     home: 'ہوم',
@@ -59,6 +79,16 @@ export const translations = {
     birthday: 'تاریخ پیدائش',
     invalidNumber: 'غلط نمبر',
     noNumber: 'کوئی نمبر نہیں',
-    transferred: 'منتقل کر دیا گیا'
+    transferred: 'منتقل کر دیا گیا',
+    tourWelcome: 'کلاس 1 کی ویب سائٹ میں خوش آمدید! آئیے ایک مختصر دورہ کریں۔',
+    tourLang: 'یہاں زبان تبدیل کریں (انڈونیشین، انگریزی، اردو)۔',
+    tourRoster: 'طلباء کی مکمل فہرست اور پروفائلز دیکھیں۔',
+    tourCalendar: 'تعلیمی کیلنڈر اور تعطیلات چیک کریں۔',
+    tourDate: 'دوسرے دنوں (ماضی یا مستقبل) کی سرگرمیاں دیکھنے کے لیے تاریخ تبدیل کریں۔',
+    tourCards: 'شیڈول، ہوم ورک، یونیفارم اور جھلکیوں کے بارے میں معلومات۔',
+    tourNext: 'اگلا',
+    tourBack: 'پیچھے',
+    tourClose: 'بند کریں',
+    tourSkip: 'چھوڑ دیں'
   }
 };
