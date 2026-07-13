@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Calendar, Heart } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 
 export const Roster: React.FC = () => {
   const { t } = useAppContext();
@@ -41,40 +42,97 @@ export const Roster: React.FC = () => {
       <h2 className="text-2xl font-bold mb-6 text-primary">{t.roster}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {students.map(s => (
-          <Card key={s.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <CardContent className="p-6 flex flex-col items-center text-center">
-              <Avatar className="w-24 h-32 rounded-lg mb-4 border-2 border-primary/20">
-                <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
-                <AvatarFallback className="rounded-lg text-2xl font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
-              </Avatar>
-              <h3 className="font-semibold text-lg mb-2">{s.name}</h3>
+          <Dialog key={s.id}>
+            <DialogTrigger asChild>
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6 flex flex-col items-center text-center">
+                  <Avatar className="w-24 h-32 rounded-lg mb-4 border-2 border-primary/20">
+                    <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
+                    <AvatarFallback className="rounded-lg text-2xl font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
+                  </Avatar>
+                  <h3 className="font-semibold text-lg mb-2">{s.name}</h3>
+                  
+                  <div className="flex flex-col gap-2 w-full text-sm mt-2 text-left">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      {s.phone === 'Mutasi' ? (
+                        <Badge variant="destructive">{t.transferred}</Badge>
+                      ) : !s.phone ? (
+                        <Badge variant="secondary" className="bg-orange-100 text-orange-800 hover:bg-orange-100">{t.noNumber}</Badge>
+                      ) : s.phone === '08' ? (
+                        <Badge variant="outline" className="text-orange-600 border-orange-200">{t.invalidNumber}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">{s.phone}</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      <span>{s.birthday || '-'}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Heart className="w-4 h-4" />
+                      <span>{s.hobby || '-'}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </DialogTrigger>
+            
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Raport Online: {s.name}</DialogTitle>
+                <DialogDescription>Laporan perkembangan harian, mingguan, dan bulanan (Versi Prototype)</DialogDescription>
+              </DialogHeader>
               
-              <div className="flex flex-col gap-2 w-full text-sm mt-2 text-left">
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-muted-foreground" />
-                  {s.phone === 'Mutasi' ? (
-                    <Badge variant="destructive">{t.transferred}</Badge>
-                  ) : !s.phone ? (
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800 hover:bg-orange-100">{t.noNumber}</Badge>
-                  ) : s.phone === '08' ? (
-                    <Badge variant="outline" className="text-orange-600 border-orange-200">{t.invalidNumber}</Badge>
-                  ) : (
-                    <span className="text-muted-foreground">{s.phone}</span>
-                  )}
+              <div className="grid gap-4 py-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="w-16 h-16 border-2 border-primary/20">
+                    <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
+                    <AvatarFallback className="rounded-lg text-lg font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-semibold">{s.name}</h4>
+                    <p className="text-sm text-muted-foreground">Tanggal Lahir: {s.birthday || '-'}</p>
+                    <p className="text-sm text-muted-foreground">Hobi: {s.hobby || '-'}</p>
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  <span>{s.birthday || '-'}</span>
+                <div className="bg-muted/30 p-4 rounded-lg border">
+                  <h4 className="font-semibold mb-2">Laporan Harian (Hari Ini)</h4>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                    <li>Hadir tepat waktu (06:45 WIB)</li>
+                    <li>Sangat aktif dalam sesi tanya jawab Matematika</li>
+                    <li>Membawa bekal sehat dan menghabiskan makan siangnya</li>
+                  </ul>
                 </div>
                 
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Heart className="w-4 h-4" />
-                  <span>{s.hobby || '-'}</span>
+                <div className="bg-muted/30 p-4 rounded-lg border">
+                  <h4 className="font-semibold mb-2">Nilai Mingguan</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span>Membaca & Menulis</span>
+                      <Badge variant="default" className="bg-green-500">A (Sangat Baik)</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Berhitung</span>
+                      <Badge variant="default" className="bg-blue-500">B+ (Baik)</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Seni & Kreativitas</span>
+                      <Badge variant="default" className="bg-purple-500">A (Sangat Baik)</Badge>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                  <h4 className="font-semibold mb-2 text-primary">Catatan Guru Bulan Ini</h4>
+                  <p className="text-sm text-slate-700 italic">"{s.name} menunjukkan perkembangan yang sangat pesat dalam kemampuan berhitung dan selalu ceria saat bermain bersama teman-teman."</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
         ))}
       </div>
     </div>

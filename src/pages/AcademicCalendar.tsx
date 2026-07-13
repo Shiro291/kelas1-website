@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, PartyPopper, Users, GraduationCap, ChevronLeft, ChevronRight, CalendarIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 
 interface CalendarEvent {
   start: string; // YYYY-MM-DD
@@ -111,18 +112,82 @@ export const AcademicCalendar: React.FC = () => {
     });
 
     return (
-      <div key={day} className="border border-border min-h-[80px] p-1 flex flex-col items-start bg-card transition-colors hover:bg-slate-50">
-        <span className={`text-sm font-medium p-1 rounded-full w-7 h-7 flex items-center justify-center ${dayEvents.length > 0 ? 'bg-primary/10 text-primary' : 'text-foreground'}`}>
-          {day}
-        </span>
-        <div className="flex flex-col gap-1 w-full mt-1">
-          {dayEvents.map((ev, idx) => (
-            <div key={idx} className={`${getEventColor(ev.type)} text-[10px] text-white px-1 py-0.5 rounded shadow-sm truncate`} title={ev.title}>
-              {ev.title}
+      <Dialog key={day}>
+        <DialogTrigger asChild>
+          <div className="border border-border min-h-[80px] p-1 flex flex-col items-start bg-card transition-colors hover:bg-slate-50 cursor-pointer hover:border-primary/50 group relative">
+            <span className={`text-sm font-medium p-1 rounded-full w-7 h-7 flex items-center justify-center ${dayEvents.length > 0 ? 'bg-primary/10 text-primary' : 'text-foreground'}`}>
+              {day}
+            </span>
+            <div className="flex flex-col gap-1 w-full mt-1">
+              {dayEvents.map((ev, idx) => (
+                <div key={idx} className={`${getEventColor(ev.type)} text-[10px] text-white px-1 py-0.5 rounded shadow-sm truncate`} title={ev.title}>
+                  {ev.title}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+            {/* Hover indicator to show it's clickable */}
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded" />
+          </div>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Kegiatan: {day} {monthNames[month]} {year}</DialogTitle>
+            <DialogDescription>
+              Detail jadwal kegiatan dan pembelajaran hari ini.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            {dayEvents.length > 0 && (
+              <div className="space-y-3 mb-6">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Agenda Utama</h4>
+                {dayEvents.map((ev, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="p-2 bg-slate-100 rounded-full shrink-0">
+                      {getEventIcon(ev.type)}
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{ev.title}</h3>
+                      <div className="mt-1">{getEventBadge(ev.type)}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Jadwal Pembelajaran (Prototype)</h4>
+              {dayEvents.some(e => e.type === 'holiday') ? (
+                <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-center">
+                  <PartyPopper className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                  <p className="font-medium text-red-700">Libur Nasional / Sekolah</p>
+                  <p className="text-sm text-red-600 mt-1">Tidak ada kegiatan belajar mengajar.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
+                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                      <BookOpen className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Matematika</p>
+                      <p className="text-sm text-muted-foreground">Belajar berhitung angka 1-20 dengan media interaktif.</p>
+                    </div>
+                  </div>
+                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
+                    <div className="p-2 bg-orange-100 rounded-lg shrink-0">
+                      <PartyPopper className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Seni Budaya</p>
+                      <p className="text-sm text-muted-foreground">Mewarnai pemandangan alam dan bernyanyi bersama.</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   });
 

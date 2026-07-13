@@ -81,13 +81,31 @@ export const Home: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="border-t-4 border-t-purple-500 shadow-sm hover:shadow-md transition-shadow">
+      <Card className="border-t-4 border-t-purple-500 shadow-sm hover:shadow-md transition-shadow sm:col-span-1 md:col-span-2">
         <CardHeader className="flex flex-row items-center gap-2 pb-2">
           <Star className="w-5 h-5 text-purple-500" />
           <CardTitle className="text-xl">{t.highlights}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground whitespace-pre-wrap">{data.highlights}</p>
+          <p className="text-muted-foreground whitespace-pre-wrap mb-4">{data.highlights}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <div className="group relative overflow-hidden rounded-lg aspect-square">
+              <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80" alt="Belajar" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Kegiatan Kelas</div>
+            </div>
+            <div className="group relative overflow-hidden rounded-lg aspect-square">
+              <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=400&q=80" alt="Seni Rupa" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Hasil Karya Seni</div>
+            </div>
+            <div className="group relative overflow-hidden rounded-lg aspect-square">
+              <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80" alt="Bermain" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Waktu Bermain</div>
+            </div>
+            <div className="group relative overflow-hidden rounded-lg aspect-square">
+              <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80" alt="Membaca" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Pojok Baca</div>
+            </div>
+          </div>
         </CardContent>
       </Card>
         </div>
