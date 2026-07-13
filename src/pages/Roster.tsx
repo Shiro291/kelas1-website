@@ -80,56 +80,22 @@ export const Roster: React.FC = () => {
               </Card>
             </DialogTrigger>
             
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-md text-center p-8">
               <DialogHeader>
-                <DialogTitle>Raport Online: {s.name}</DialogTitle>
-                <DialogDescription>Laporan perkembangan harian, mingguan, dan bulanan (Versi Prototype)</DialogDescription>
+                <DialogTitle className="text-center">Raport Online: {s.name}</DialogTitle>
+                <DialogDescription className="text-center">
+                  Fitur ini masih dalam tahap pengembangan.
+                </DialogDescription>
               </DialogHeader>
               
-              <div className="grid gap-4 py-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-16 h-16 border-2 border-primary/20">
-                    <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
-                    <AvatarFallback className="rounded-lg text-lg font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-semibold">{s.name}</h4>
-                    <p className="text-sm text-muted-foreground">Tanggal Lahir: {s.birthday || '-'}</p>
-                    <p className="text-sm text-muted-foreground">Hobi: {s.hobby || '-'}</p>
-                  </div>
+              <div className="flex flex-col items-center justify-center py-8 opacity-60">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Heart className="w-8 h-8 text-muted-foreground" />
                 </div>
-                
-                <div className="bg-muted/30 p-4 rounded-lg border">
-                  <h4 className="font-semibold mb-2">Laporan Harian (Hari Ini)</h4>
-                  <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                    <li>Hadir tepat waktu (06:45 WIB)</li>
-                    <li>Sangat aktif dalam sesi tanya jawab Matematika</li>
-                    <li>Membawa bekal sehat dan menghabiskan makan siangnya</li>
-                  </ul>
-                </div>
-                
-                <div className="bg-muted/30 p-4 rounded-lg border">
-                  <h4 className="font-semibold mb-2">Nilai Mingguan</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span>Membaca & Menulis</span>
-                      <Badge variant="default" className="bg-green-500">A (Sangat Baik)</Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Berhitung</span>
-                      <Badge variant="default" className="bg-blue-500">B+ (Baik)</Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Seni & Kreativitas</span>
-                      <Badge variant="default" className="bg-purple-500">A (Sangat Baik)</Badge>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
-                  <h4 className="font-semibold mb-2 text-primary">Catatan Guru Bulan Ini</h4>
-                  <p className="text-sm text-slate-700 italic">"{s.name} menunjukkan perkembangan yang sangat pesat dalam kemampuan berhitung dan selalu ceria saat bermain bersama teman-teman."</p>
-                </div>
+                <h3 className="font-medium text-lg mb-1">Segera Hadir</h3>
+                <p className="text-sm text-muted-foreground max-w-[250px]">
+                  Laporan perkembangan harian, mingguan, dan bulanan siswa akan segera ditambahkan di sini.
+                </p>
               </div>
             </DialogContent>
           </Dialog>

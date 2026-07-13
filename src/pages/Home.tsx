@@ -88,23 +88,12 @@ export const Home: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground whitespace-pre-wrap mb-4">{data.highlights}</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div className="group relative overflow-hidden rounded-lg aspect-square">
-              <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80" alt="Belajar" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Kegiatan Kelas</div>
-            </div>
-            <div className="group relative overflow-hidden rounded-lg aspect-square">
-              <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=400&q=80" alt="Seni Rupa" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Hasil Karya Seni</div>
-            </div>
-            <div className="group relative overflow-hidden rounded-lg aspect-square">
-              <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80" alt="Bermain" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Waktu Bermain</div>
-            </div>
-            <div className="group relative overflow-hidden rounded-lg aspect-square">
-              <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80" alt="Membaca" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 text-white font-medium text-sm">Pojok Baca</div>
-            </div>
+          <div className="flex flex-col items-center justify-center py-8 opacity-60 bg-muted/20 border rounded-lg border-dashed mt-4">
+            <Star className="w-8 h-8 text-muted-foreground mb-3" />
+            <p className="font-medium">Galeri Segera Hadir</p>
+            <p className="text-sm text-muted-foreground text-center mt-1">
+              Foto-foto kegiatan dan hasil karya siswa akan segera ditambahkan di sini.
+            </p>
           </div>
         </CardContent>
       </Card>

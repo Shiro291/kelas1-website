@@ -155,7 +155,7 @@ export const AcademicCalendar: React.FC = () => {
             )}
             
             <div className="space-y-3">
-              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Jadwal Pembelajaran (Prototype)</h4>
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Jadwal Pembelajaran</h4>
               {dayEvents.some(e => e.type === 'holiday') ? (
                 <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-center">
                   <PartyPopper className="w-8 h-8 text-red-500 mx-auto mb-2" />
@@ -163,26 +163,13 @@ export const AcademicCalendar: React.FC = () => {
                   <p className="text-sm text-red-600 mt-1">Tidak ada kegiatan belajar mengajar.</p>
                 </div>
               ) : (
-                <>
-                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
-                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Matematika</p>
-                      <p className="text-sm text-muted-foreground">Belajar berhitung angka 1-20 dengan media interaktif.</p>
-                    </div>
-                  </div>
-                  <div className="bg-muted/30 p-3 rounded-lg border flex gap-3 items-center hover:bg-muted/50 transition-colors">
-                    <div className="p-2 bg-orange-100 rounded-lg shrink-0">
-                      <PartyPopper className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium">Seni Budaya</p>
-                      <p className="text-sm text-muted-foreground">Mewarnai pemandangan alam dan bernyanyi bersama.</p>
-                    </div>
-                  </div>
-                </>
+                <div className="flex flex-col items-center justify-center py-6 opacity-60 bg-muted/20 border rounded-lg border-dashed">
+                  <CalendarIcon className="w-8 h-8 text-muted-foreground mb-3" />
+                  <p className="font-medium">Segera Hadir</p>
+                  <p className="text-sm text-muted-foreground text-center mt-1">
+                    Detail jadwal pembelajaran akan segera ditambahkan di sini.
+                  </p>
+                </div>
               )}
             </div>
           </div>
