@@ -78,6 +78,7 @@ export const Home: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground whitespace-pre-wrap">{data.uniform}</p>
+          <p className="text-[0.7rem] text-muted-foreground/70 italic mt-3 border-t pt-2">* untuk melihat seragam besoknya bisa tap tanda panah hari selanjutnya ➡️</p>
         </CardContent>
       </Card>
 

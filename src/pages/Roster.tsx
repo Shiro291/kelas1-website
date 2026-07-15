@@ -9,7 +9,7 @@ import { Phone, Calendar, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 
 export const Roster: React.FC = () => {
-  const { t } = useAppContext();
+  const { t, selectedClass } = useAppContext();
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,6 +19,7 @@ export const Roster: React.FC = () => {
         const { data, error } = await supabase
           .from('students')
           .select('*')
+          .eq('class_name', selectedClass)
           .order('name');
         
         if (data && !error) {
@@ -31,7 +32,7 @@ export const Roster: React.FC = () => {
       }
     };
     fetchStudents();
-  }, []);
+  }, [selectedClass]);
 
   if (isLoading) {
     return <div className="flex justify-center p-8">Memuat daftar siswa...</div>;
@@ -145,12 +146,65 @@ export const Roster: React.FC = () => {
                   </div>
                 </div>
               </DialogContent>
+            ) : (s.daily_report || s.weekly_scores || s.teacher_notes) ? (
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Raport Online: {s.name}</DialogTitle>
+                  <DialogDescription>Laporan perkembangan belajar siswa</DialogDescription>
+                </DialogHeader>
+                
+                <div className="grid gap-4 py-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-16 h-16 border-2 border-primary/20">
+                      <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
+                      <AvatarFallback className="rounded-lg text-lg font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold">{s.name}</h4>
+                      <p className="text-sm text-muted-foreground">Tanggal Lahir: {s.birthday || '-'}</p>
+                      <p className="text-sm text-muted-foreground">Hobi: {s.hobby || '-'}</p>
+                    </div>
+                  </div>
+                  
+                  {s.daily_report && s.daily_report.length > 0 && (
+                    <div className="bg-muted/30 p-4 rounded-lg border">
+                      <h4 className="font-semibold mb-2">Laporan Harian</h4>
+                      <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        {s.daily_report.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {s.weekly_scores && Object.keys(s.weekly_scores).length > 0 && (
+                    <div className="bg-muted/30 p-4 rounded-lg border">
+                      <h4 className="font-semibold mb-2">Nilai Mingguan</h4>
+                      <div className="space-y-2 text-sm">
+                        {Object.entries(s.weekly_scores).map(([subject, score], idx) => (
+                          <div key={idx} className="flex justify-between items-center">
+                            <span>{subject}</span>
+                            <Badge variant="default" className="bg-blue-500">{score}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {s.teacher_notes && (
+                    <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                      <h4 className="font-semibold mb-2 text-primary">Catatan Guru</h4>
+                      <p className="text-sm text-slate-700 italic">"{s.teacher_notes}"</p>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
             ) : (
               <DialogContent className="max-w-md text-center p-8">
                 <DialogHeader>
                   <DialogTitle className="text-center">Raport Online: {s.name}</DialogTitle>
                   <DialogDescription className="text-center">
-                    Fitur ini masih dalam tahap pengembangan.
+                    Belum ada data raport untuk siswa ini.
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -160,7 +214,7 @@ export const Roster: React.FC = () => {
                   </div>
                   <h3 className="font-medium text-lg mb-1">Segera Hadir</h3>
                   <p className="text-sm text-muted-foreground max-w-[250px]">
-                    Laporan perkembangan harian, mingguan, dan bulanan siswa akan segera ditambahkan di sini.
+                    Laporan perkembangan akan diperbarui oleh guru.
                   </p>
                 </div>
               </DialogContent>

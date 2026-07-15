@@ -13,34 +13,11 @@ interface CalendarEvent {
   type: 'holiday' | 'exam' | 'event' | 'meeting';
 }
 
-const allEvents: CalendarEvent[] = [
-  // Semester 1
-  { start: '2026-07-13', end: '2026-07-17', title: 'MPLS', type: 'event' },
-  { start: '2026-08-14', end: '2026-08-14', title: 'Lomba Kemerdekaan', type: 'event' },
-  { start: '2026-08-17', end: '2026-08-17', title: 'Upacara Kemerdekaan (Libur Umum)', type: 'holiday' },
-  { start: '2026-09-21', end: '2026-09-28', title: 'ASTS Ganjil', type: 'exam' },
-  { start: '2026-10-03', end: '2026-10-03', title: 'Outing Class (Besar)', type: 'event' },
-  { start: '2026-10-09', end: '2026-10-09', title: 'Pembagian Hasil ASTS Ganjil', type: 'meeting' },
-  { start: '2026-10-29', end: '2026-10-29', title: 'Outing Class (Kecil)', type: 'event' },
-  { start: '2026-11-20', end: '2026-11-21', title: 'Perjusa', type: 'event' },
-  { start: '2026-11-30', end: '2026-12-07', title: 'ASAS Ganjil', type: 'exam' },
-  { start: '2026-12-10', end: '2026-12-11', title: 'Classmeeting Ganjil', type: 'event' },
-  { start: '2026-12-14', end: '2026-12-14', title: 'Pembagian Hadiah', type: 'event' },
-  { start: '2026-12-18', end: '2026-12-18', title: 'Pembagian Raport ASAS', type: 'meeting' },
-  { start: '2026-12-21', end: '2026-12-31', title: 'Libur Semester Ganjil', type: 'holiday' },
-  
-  // Semester 2
-  { start: '2027-02-02', end: '2027-02-02', title: 'Pengajian Akbar', type: 'event' },
-  { start: '2027-02-22', end: '2027-02-26', title: 'Pesantren Kilat', type: 'event' },
-  { start: '2027-03-25', end: '2027-04-02', title: 'ASTS Genap', type: 'exam' },
-  { start: '2027-04-16', end: '2027-04-16', title: 'Pembagian Hasil ASTS Genap', type: 'meeting' },
-  { start: '2027-06-07', end: '2027-06-14', title: 'ASAT Genap (Kenaikan Kelas)', type: 'exam' },
-  { start: '2027-06-17', end: '2027-06-18', title: 'Class Meeting Genap', type: 'event' },
-  { start: '2027-06-21', end: '2027-06-21', title: 'Pembagian Hadiah', type: 'event' },
-  { start: '2027-06-25', end: '2027-06-25', title: 'Pembagian Raport Kenaikan Kelas', type: 'meeting' },
-  { start: '2027-06-26', end: '2027-07-10', title: 'Libur Semester Genap', type: 'holiday' },
-  { start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0], title: '(Demo) Kegiatan Belajar', type: 'event' },
-];
+import { supabase } from '../lib/supabase';
+
+// Static base events can still be merged or we can rely fully on Supabase.
+// Based on the user request, we want it dynamic. Let's fetch from Supabase.
+
 
 const getEventIcon = (type: string) => {
   switch (type) {
@@ -77,8 +54,28 @@ const monthNames = [
 const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 export const AcademicCalendar: React.FC = () => {
-  const { t } = useAppContext();
+  const { t, selectedClass } = useAppContext();
+
   
+  const [allEvents, setAllEvents] = useState<CalendarEvent[]>([]);
+
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase.from('events').select('*').eq('class_name', selectedClass);
+      if (!error && data) {
+        // Map database fields to CalendarEvent format
+        const fetchedEvents = data.map(ev => ({
+          start: ev.start_date,
+          end: ev.end_date,
+          title: ev.title,
+          type: ev.type as 'holiday' | 'exam' | 'event' | 'meeting'
+        }));
+        setAllEvents(fetchedEvents);
+      }
+    };
+    fetchEvents();
+  }, [selectedClass]);
+
   // Start at current month
   const [currentDate, setCurrentDate] = useState(new Date());
   

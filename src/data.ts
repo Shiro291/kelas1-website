@@ -6,6 +6,9 @@ export interface Student {
   birthday: string;
   hobby: string;
   notes: string;
+  daily_report?: string[];
+  weekly_scores?: Record<string, string>;
+  teacher_notes?: string;
 }
 
 export const initialStudents: Student[] = [

@@ -56,4 +56,23 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  html {
+    color-scheme: light dark;
+    scrollbar-color: hsl(var(--muted-foreground)) transparent;
+  }
+
+  /* Accessible form validation feedback (Validate Input After Interaction) */
+  input:user-invalid,
+  textarea:user-invalid,
+  select:user-invalid {
+    border-color: hsl(var(--destructive));
+  }
+  
+  /* Opt-in View Transitions */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-group(root) {
+      animation-duration: 0.3s;
+    }
+  }
 }
