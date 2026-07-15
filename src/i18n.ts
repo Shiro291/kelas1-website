@@ -23,7 +23,7 @@ export const translations = {
     tourWelcome: 'Selamat datang di Website Kelas 1! Mari kita mulai tur singkat.',
     tourLang: 'Ubah bahasa di sini (Indonesia, Inggris, Urdu).',
     tourRoster: 'Lihat daftar lengkap siswa dan profil mereka.',
-    tourCalendar: 'Cek kalender akademik dan hari libur.',
+    tourCalendar: 'Cek kalender akademik dan hari libur. Anda juga dapat melihat agenda kegiatan dari sini.',
     tourDate: 'Ganti tanggal untuk melihat kegiatan di hari lain (lampau atau masa depan).',
     tourCards: 'Informasi jadwal, PR, seragam, dan sorotan kelas.',
     tourNext: 'Lanjut',
