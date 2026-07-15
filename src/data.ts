@@ -18,7 +18,7 @@ export const initialStudents: Student[] = [
   { id: 4, name: "Azriel Rahandika Ardyansyah", phone: "082111826004", photo: "", birthday: "", hobby: "", notes: "" },
   { id: 5, name: "Muhammad Arsya Budiarta", phone: "081367357055", photo: "", birthday: "", hobby: "", notes: "" },
   { id: 6, name: "Nizam Zakaria Frastya", phone: "087886508005", photo: "", birthday: "", hobby: "", notes: "" },
-  { id: 7, name: "Marvella Annavita Hasanah", phone: "085891295531", photo: "", birthday: "", hobby: "", notes: "" },
+  { id: 7, name: "Marvelia Annavita Hasanah", phone: "085891295531", photo: "", birthday: "", hobby: "", notes: "" },
   { id: 8, name: "Rafifa Humaira Zulfha", phone: "085693238041", photo: "", birthday: "", hobby: "", notes: "" },
   { id: 9, name: "Shafiyah Tazakka", phone: "085695769577", photo: "", birthday: "", hobby: "", notes: "" },
   { id: 10, name: "Nizar Rayyan Syauqi", phone: "08599808029", photo: "", birthday: "", hobby: "", notes: "" },
