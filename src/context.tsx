@@ -25,6 +25,7 @@ interface AppContextType {
   setSelectedClass: (cls: string) => void;
   teacherClass: string | null;
   setTeacherClass: (cls: string | null) => void;
+  availableClasses: string[];
 }
 
 const defaultData: ScheduleData = {
@@ -42,6 +43,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<string>('IR Soekarno');
   const [teacherClass, setTeacherClass] = useState<string | null>(null);
+  const [availableClasses, setAvailableClasses] = useState<string[]>(['IR Soekarno']);
   
   // Format today as YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0];
@@ -84,7 +86,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsLoading(false);
       }
     };
+
+    const fetchClasses = async () => {
+      try {
+        const { data, error } = await supabase.from('profiles').select('class_name');
+        if (!error && data) {
+          const fetchedClasses = data.map(p => p.class_name).filter(Boolean) as string[];
+          const defaultClasses = ['IR Soekarno', 'Muh. Hatta', 'Ki Hajar Dewantara'];
+          const uniqueClasses = Array.from(new Set([...defaultClasses, ...fetchedClasses]));
+          setAvailableClasses(uniqueClasses);
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+      }
+    };
+
     fetchSchedule();
+    fetchClasses();
   }, [selectedDate, selectedClass]);
 
   const setData = async (newData: ScheduleData) => {
@@ -104,8 +122,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const t = translations[lang];
 
   const value = useMemo(() => ({
-    lang, setLang, t, data, setData, isLoading, selectedDate, setSelectedDate, selectedClass, setSelectedClass, teacherClass, setTeacherClass
-  }), [lang, t, data, isLoading, selectedDate, selectedClass, teacherClass]);
+    lang, setLang, t, data, setData, isLoading, selectedDate, setSelectedDate, selectedClass, setSelectedClass, teacherClass, setTeacherClass, availableClasses
+  }), [lang, t, data, isLoading, selectedDate, selectedClass, teacherClass, availableClasses]);
 
   return (
     <AppContext.Provider value={value}>

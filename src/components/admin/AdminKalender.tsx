@@ -22,8 +22,10 @@ export const AdminKalender: React.FC = () => {
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null);
+  const [isGlobal, setIsGlobal] = useState(false);
 
-  const isOwnClass = !teacherClass || selectedClass === teacherClass;
+  const isSuperAdmin = !teacherClass;
+  const isOwnClass = isSuperAdmin || selectedClass === teacherClass;
 
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   const alertRef = React.useRef<HTMLDialogElement>(null);
@@ -47,17 +49,20 @@ export const AdminKalender: React.FC = () => {
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .eq('class_name', selectedClass)
       .order('start_date');
       
     if (!error && data) {
-      setEvents(data as EventData[]);
+      const filteredData = data.filter(ev => 
+        !ev.class_name || ev.class_name === 'Semua Kelas' || ev.class_name === selectedClass
+      );
+      setEvents(filteredData as EventData[]);
     }
     setLoading(false);
   };
 
   const handleEdit = (event: EventData) => {
     setEditingEvent(event);
+    setIsGlobal(!event.class_name || event.class_name === 'Semua Kelas');
   };
 
   const handleAddNew = () => {
@@ -68,6 +73,7 @@ export const AdminKalender: React.FC = () => {
       type: 'academic',
       description: ''
     });
+    setIsGlobal(false);
   };
 
   const confirmDelete = (id: string) => {
@@ -101,6 +107,7 @@ export const AdminKalender: React.FC = () => {
           title: editingEvent.title,
           type: editingEvent.type,
           description: editingEvent.description,
+          class_name: isGlobal ? 'Semua Kelas' : selectedClass,
         })
         .eq('id', editingEvent.id);
 
@@ -120,7 +127,7 @@ export const AdminKalender: React.FC = () => {
           title: editingEvent.title,
           type: editingEvent.type,
           description: editingEvent.description,
-          class_name: selectedClass, // Bind event to class
+          class_name: isGlobal ? 'Semua Kelas' : selectedClass,
         }]);
 
       if (error) showAlert('Gagal menambahkan data: ' + error.message);
@@ -189,6 +196,18 @@ export const AdminKalender: React.FC = () => {
                 onChange={(e) => setEditingEvent({...editingEvent, description: e.target.value})}
               />
             </div>
+            {isSuperAdmin && (
+              <div className="flex items-center gap-2">
+                <input 
+                  type="checkbox" 
+                  id="global-event" 
+                  checked={isGlobal} 
+                  onChange={(e) => setIsGlobal(e.target.checked)} 
+                  className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <Label htmlFor="global-event" className="cursor-pointer">Berlaku untuk Semua Kelas (Global)</Label>
+              </div>
+            )}
             <div className="flex gap-2">
               <Button type="submit">Simpan</Button>
               <Button variant="outline" type="button" onClick={() => setEditingEvent(null)}>Batal</Button>
@@ -218,12 +237,19 @@ export const AdminKalender: React.FC = () => {
             events.map(e => (
               <div key={e.id} className="flex justify-between items-center p-3 border rounded">
                 <div>
-                  <p className="font-semibold">{e.title}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{e.title}</p>
+                    {(!e.class_name || e.class_name === 'Semua Kelas') ? (
+                      <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full border border-red-200">Global</span>
+                    ) : (
+                      <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">Kelas</span>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {e.start_date} {e.start_date !== e.end_date ? `- ${e.end_date}` : ''}
                   </p>
                 </div>
-                {isOwnClass && (
+                {(isSuperAdmin || (isOwnClass && e.class_name !== 'Semua Kelas' && e.class_name !== null)) && (
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(e)}>Edit</Button>
                     <Button variant="destructive" size="sm" onClick={() => e.id && confirmDelete(e.id)}>Hapus</Button>

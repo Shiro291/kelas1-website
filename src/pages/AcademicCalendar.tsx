@@ -11,6 +11,7 @@ interface CalendarEvent {
   end: string;
   title: string;
   type: 'holiday' | 'exam' | 'event' | 'meeting';
+  isGlobal?: boolean;
 }
 
 import { supabase } from '../lib/supabase';
@@ -61,14 +62,22 @@ export const AcademicCalendar: React.FC = () => {
 
   React.useEffect(() => {
     const fetchEvents = async () => {
-      const { data, error } = await supabase.from('events').select('*').eq('class_name', selectedClass);
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('start_date');
+        
       if (!error && data) {
-        // Map database fields to CalendarEvent format
-        const fetchedEvents = data.map(ev => ({
+        const filteredData = data.filter(ev => 
+          !ev.class_name || ev.class_name === 'Semua Kelas' || ev.class_name === selectedClass
+        );
+        
+        const fetchedEvents = filteredData.map(ev => ({
           start: ev.start_date,
           end: ev.end_date,
           title: ev.title,
-          type: ev.type as 'holiday' | 'exam' | 'event' | 'meeting'
+          type: ev.type as 'holiday' | 'exam' | 'event' | 'meeting',
+          isGlobal: !ev.class_name || ev.class_name === 'Semua Kelas'
         }));
         setAllEvents(fetchedEvents);
       }
@@ -148,7 +157,12 @@ export const AcademicCalendar: React.FC = () => {
                       {getEventIcon(ev.type)}
                     </div>
                     <div>
-                      <h3 className="font-medium">{ev.title}</h3>
+                      <h3 className="font-medium flex items-center gap-2">
+                        {ev.title}
+                        {ev.isGlobal && (
+                          <span className="text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded border border-red-200">Global</span>
+                        )}
+                      </h3>
                       <div className="mt-1">{getEventBadge(ev.type)}</div>
                     </div>
                   </div>
@@ -260,7 +274,12 @@ export const AcademicCalendar: React.FC = () => {
                       {getEventIcon(ev.type)}
                     </div>
                     <div>
-                      <h3 className="font-medium text-lg">{ev.title}</h3>
+                      <h3 className="font-medium text-lg flex items-center gap-2">
+                        {ev.title}
+                        {ev.isGlobal && (
+                          <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full border border-red-200">Global</span>
+                        )}
+                      </h3>
                       <p className="text-sm text-slate-500">
                         {ev.start === ev.end 
                           ? new Date(ev.start).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })

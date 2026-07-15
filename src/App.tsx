@@ -1,36 +1,34 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AppProvider, useAppContext } from './context';
-import { Navbar } from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AppProvider } from './context';
 import { Home } from './pages/Home';
 import { Roster } from './pages/Roster';
 import { AcademicCalendar } from './pages/AcademicCalendar';
 import { Admin } from './pages/Admin';
 import { Teacher } from './pages/Teacher';
 import { Tutorial } from './components/Tutorial';
+import { PublicLayout } from './layouts/PublicLayout';
+import { DashboardLayout } from './layouts/DashboardLayout';
 
 const AppContent: React.FC = () => {
-  const { selectedClass } = useAppContext();
   return (
     <Router>
-      <div className="min-h-screen bg-background p-4 md:p-8">
-        <div className="max-w-5xl mx-auto">
-          <header className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary tracking-tight">
-              Kelas 1 {selectedClass} Mudipas49
-            </h1>
-          </header>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/roster" element={<Roster />} />
-            <Route path="/calendar" element={<AcademicCalendar />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/teacher" element={<Teacher />} />
-          </Routes>
-          <Tutorial />
-        </div>
-      </div>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/roster" element={<Roster />} />
+          <Route path="/calendar" element={<AcademicCalendar />} />
+        </Route>
+        
+        <Route element={<DashboardLayout />}>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/teacher" element={<Teacher />} />
+        </Route>
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Tutorial />
     </Router>
   );
 };

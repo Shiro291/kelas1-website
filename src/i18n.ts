@@ -29,7 +29,8 @@ export const translations = {
     tourNext: 'Lanjut',
     tourBack: 'Kembali',
     tourClose: 'Tutup',
-    tourSkip: 'Lewati'
+    tourSkip: 'Lewati',
+    tourClass: 'Pilih kelas Anda di sini untuk melihat jadwal dan informasi spesifik kelas tersebut.'
   },
   en: {
     home: 'Home',
@@ -59,7 +60,8 @@ export const translations = {
     tourNext: 'Next',
     tourBack: 'Back',
     tourClose: 'Close',
-    tourSkip: 'Skip'
+    tourSkip: 'Skip',
+    tourClass: 'Select your class here to view its specific schedule and information.'
   },
   ur: {
     home: 'ہوم',
@@ -89,6 +91,7 @@ export const translations = {
     tourNext: 'اگلا',
     tourBack: 'پیچھے',
     tourClose: 'بند کریں',
-    tourSkip: 'چھوڑ دیں'
+    tourSkip: 'چھوڑ دیں',
+    tourClass: 'اس کلاس کا مخصوص شیڈول اور معلومات دیکھنے کے لیے یہاں اپنی کلاس منتخب کریں۔'
   }
 };

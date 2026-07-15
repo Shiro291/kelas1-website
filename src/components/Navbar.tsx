@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 
 
 export const Navbar: React.FC = () => {
-  const { lang, setLang, t, selectedClass, setSelectedClass } = useAppContext();
+  const { lang, setLang, t } = useAppContext();
   const location = useLocation();
 
   const langs: Language[] = ['id', 'en', 'ur'];
-  const classes = ['IR Soekarno', 'Muh. Hatta', 'Ki Hajar Dewantara']; // Default classes
 
   return (
     <nav className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 mb-6 bg-card rounded-lg border shadow-sm">
@@ -27,27 +26,6 @@ export const Navbar: React.FC = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-        <div className="step-nav-class w-full md:w-auto overflow-hidden">
-          <div className="flex gap-2 overflow-x-auto pb-2 -mb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {classes.map(c => (
-              <Button
-                key={c}
-                variant={selectedClass === c ? 'default' : 'outline'}
-                className="rounded-full whitespace-nowrap transition-colors duration-200"
-                onClick={() => {
-                  if (!document.startViewTransition) {
-                    setSelectedClass(c);
-                  } else {
-                    document.startViewTransition(() => setSelectedClass(c));
-                  }
-                }}
-              >
-                {c}
-              </Button>
-            ))}
-          </div>
-        </div>
-
         <div className="step-lang flex gap-1">
           {langs.map(l => (
             <Button 

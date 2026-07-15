@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '../lib/supabase';
-import { LogOut, AlertCircle, HelpCircle } from 'lucide-react';
+import { AlertCircle, HelpCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Joyride, type Step } from 'react-joyride';
 
@@ -14,7 +14,7 @@ import { AdminSiswa } from '../components/admin/AdminSiswa';
 import { AdminKalender } from '../components/admin/AdminKalender';
 
 export const Teacher: React.FC = () => {
-  const { t, isLoading, setSelectedClass, teacherClass, setTeacherClass } = useAppContext();
+  const { t, isLoading, setSelectedClass, teacherClass, setTeacherClass, selectedClass } = useAppContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
@@ -48,15 +48,17 @@ export const Teacher: React.FC = () => {
     },
     {
       target: '.tour-beranda',
-      content: 'Di Beranda Harian, Anda bisa memperbarui jadwal, PR, seragam, dan highlight harian untuk murid-murid di kelas Anda. Data ini akan langsung terlihat oleh orang tua.',
+      content: 'Di Beranda Harian, Anda bisa menambah, mengedit, atau menghapus (delete) jadwal, PR, seragam, dan highlight harian untuk murid-murid di kelas Anda.',
     },
     {
       target: '.tour-siswa',
-      content: 'Di Data & Raport Siswa, Anda bisa menambah siswa baru, menghapus siswa, serta mengedit raport atau catatan guru untuk tiap siswa.',
+      content: 'Di Data & Raport Siswa, Anda bisa menambah siswa baru, menghapus siswa (delete), serta mengedit raport atau catatan guru untuk tiap siswa.',
     },
     {
       target: '.tour-kalender',
-      content: 'Di Kalender Akademik, Anda dapat menambahkan agenda penting, jadwal ujian, atau hari libur. Agenda ini akan muncul di kalender orang tua.',
+      content: role === 'superadmin' 
+        ? 'Di Kalender Akademik, Anda dapat menambah atau menghapus agenda. Sebagai Super Admin, Anda bisa mencentang "Berlaku untuk Semua Kelas (Global)".'
+        : 'Di Kalender Akademik, Anda dapat menambah, mengedit atau menghapus agenda penting. Agenda ini akan muncul di kalender orang tua.',
     }
   ];
 
@@ -76,7 +78,6 @@ export const Teacher: React.FC = () => {
       if (session) {
         setLoggedIn(true);
         fetchProfile(session.user.id);
-        // Show tutorial if it's their first time (we can just use localStorage for a simple check)
         if (!localStorage.getItem('teacher_tutorial_seen')) {
           setRunTutorial(true);
           localStorage.setItem('teacher_tutorial_seen', 'true');
@@ -111,17 +112,13 @@ export const Teacher: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
   if (isLoading) {
     return <div aria-live="polite" aria-busy="true" className="flex justify-center p-8 text-muted-foreground">Memuat...</div>;
   }
 
   if (!loggedIn) {
     return (
-      <div className="max-w-md mx-auto mt-10">
+      <div className="max-w-md mx-auto mt-10 p-4">
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-2xl text-center text-primary">Login Guru</CardTitle>
@@ -156,14 +153,6 @@ export const Teacher: React.FC = () => {
             </form>
           </CardContent>
         </Card>
-
-        <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-          <h3 className="text-lg font-bold mb-4">Informasi</h3>
-          <p className="mb-6">{alertMessage}</p>
-          <div className="flex justify-end">
-            <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-          </div>
-        </dialog>
       </div>
     );
   }
@@ -174,15 +163,15 @@ export const Teacher: React.FC = () => {
         <AlertCircle className="w-12 h-12 text-destructive" />
         <h2 className="text-xl font-bold">Akses Ditolak</h2>
         <p>Anda tidak memiliki akses sebagai Guru.</p>
-        <Button onClick={handleLogout}>Keluar</Button>
       </div>
     );
   }
 
+  const isReadOnly = role !== 'superadmin' && selectedClass !== teacherClass;
   const JoyrideComponent = Joyride as any;
 
   return (
-    <div className="max-w-4xl mx-auto mt-6 px-4">
+    <div className="flex flex-col gap-6">
       <JoyrideComponent
         steps={tutorialSteps}
         run={runTutorial}
@@ -196,19 +185,18 @@ export const Teacher: React.FC = () => {
         }}
       />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2">
         <div>
-          <h1 className="text-3xl font-bold text-primary">Dashboard Guru</h1>
-          <p className="text-muted-foreground">Mengelola Kelas: <strong className="text-primary">{teacherClass || 'Semua Kelas (Superadmin)'}</strong></p>
+          <h2 className="text-lg font-bold text-primary">Manajemen Kelas</h2>
+          {isReadOnly ? (
+            <p className="text-sm text-amber-600 font-medium">Mode Baca: Anda hanya dapat mengedit kelas Anda sendiri ({teacherClass}).</p>
+          ) : (
+            <p className="text-sm text-green-600 font-medium">Mode Edit Aktif.</p>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => setRunTutorial(true)} title="Mulai Tutorial">
-            <HelpCircle className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" onClick={handleLogout} title="Logout" className="gap-2">
-            <LogOut className="w-4 h-4" /> Keluar
-          </Button>
-        </div>
+        <Button variant="outline" size="icon" onClick={() => setRunTutorial(true)} title="Mulai Tutorial">
+          <HelpCircle className="w-4 h-4" />
+        </Button>
       </div>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full tour-tabs">
