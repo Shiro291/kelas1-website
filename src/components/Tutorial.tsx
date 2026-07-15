@@ -42,6 +42,10 @@ export const Tutorial: React.FC = () => {
     {
       target: '.step-nav-calendar',
       content: t.tourCalendar,
+    },
+    {
+      target: '.step-nav-class',
+      content: t.tourClass,
     }
   ];
 
