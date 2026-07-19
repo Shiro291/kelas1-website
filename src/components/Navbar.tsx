@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAppContext } from '../context';
 import type { Language } from '../i18n';
 import { Button } from '@/components/ui/button';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export const Navbar: React.FC = () => {
   const { lang, setLang, t, selectedClass, setSelectedClass, availableClasses } = useAppContext();
@@ -26,25 +26,22 @@ export const Navbar: React.FC = () => {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-        <div className="step-nav-class w-full md:w-auto overflow-hidden">
-          <div className="flex gap-2 overflow-x-auto pb-2 -mb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {availableClasses.map(c => (
-              <Button
-                key={c}
-                variant={selectedClass === c ? 'default' : 'outline'}
-                className="rounded-full whitespace-nowrap transition-colors duration-200"
-                onClick={() => {
-                  if (!document.startViewTransition) {
-                    setSelectedClass(c);
-                  } else {
-                    document.startViewTransition(() => setSelectedClass(c));
-                  }
-                }}
-              >
-                {c}
-              </Button>
-            ))}
-          </div>
+        <div className="step-nav-class w-full md:w-64">
+          <Select
+            value={selectedClass}
+            onValueChange={(val) => setSelectedClass(val)}
+          >
+            <SelectTrigger className="w-full bg-background">
+              <SelectValue placeholder="Pilih Kelas" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableClasses.map(c => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="step-lang flex gap-1">

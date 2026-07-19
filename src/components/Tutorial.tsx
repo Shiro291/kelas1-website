@@ -4,17 +4,31 @@ import type { EventData, Step } from 'react-joyride';
 import { useAppContext } from '../context';
 import { HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Tutorial: React.FC = () => {
-  const { t } = useAppContext();
+  const { t, isLoading } = useAppContext();
   const [run, setRun] = useState(false);
+  const [pendingRun, setPendingRun] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const isTutorialCompleted = localStorage.getItem('tutorial_completed');
     if (!isTutorialCompleted) {
-      setRun(true);
+      setPendingRun(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (pendingRun && !isLoading && location.pathname === '/') {
+      const timer = setTimeout(() => {
+        setRun(true);
+        setPendingRun(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [pendingRun, isLoading, location.pathname]);
 
   const steps: Step[] = [
     {
@@ -60,7 +74,10 @@ export const Tutorial: React.FC = () => {
   };
 
   const startTutorial = () => {
-    setRun(true);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+    setPendingRun(true);
   };
 
   return (

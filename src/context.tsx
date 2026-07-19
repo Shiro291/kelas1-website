@@ -41,9 +41,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [lang, setLang] = useState<Language>('id');
   const [data, setLocalData] = useState<ScheduleData>(defaultData);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedClass, setSelectedClass] = useState<string>('IR Soekarno');
+  const [selectedClass, setSelectedClass] = useState<string>('I. IR Soekarno');
   const [teacherClass, setTeacherClass] = useState<string | null>(null);
-  const [availableClasses, setAvailableClasses] = useState<string[]>(['IR Soekarno']);
+  const [availableClasses, setAvailableClasses] = useState<string[]>([
+    'I. Siti Walidah', 'I. Ahmad Dahlan', 'I. IR Soekarno', 'II. AR. Fachruddin',
+    'II. Haedar Nasier', "III. Syafi'l Maarif", 'III. Buya Hamka', 'IV. Jendral Sudirman',
+    'IV. Siti Munjiah', 'V. KH. Mas Mansyur', 'V. Siti Bariah', 'VI. Din Syamsuddin', 'VI. Amien Rais'
+  ]);
   
   // Format today as YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0];
@@ -92,7 +96,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const { data, error } = await supabase.from('profiles').select('class_name');
         if (!error && data) {
           const fetchedClasses = data.map(p => p.class_name).filter(Boolean) as string[];
-          const defaultClasses = ['IR Soekarno', 'Muh. Hatta', 'Ki Hajar Dewantara'];
+          const defaultClasses = [
+            'I. Siti Walidah', 'I. Ahmad Dahlan', 'I. IR Soekarno', 'II. AR. Fachruddin',
+            'II. Haedar Nasier', "III. Syafi'l Maarif", 'III. Buya Hamka', 'IV. Jendral Sudirman',
+            'IV. Siti Munjiah', 'V. KH. Mas Mansyur', 'V. Siti Bariah', 'VI. Din Syamsuddin', 'VI. Amien Rais'
+          ];
           const uniqueClasses = Array.from(new Set([...defaultClasses, ...fetchedClasses]));
           setAvailableClasses(uniqueClasses);
         }
