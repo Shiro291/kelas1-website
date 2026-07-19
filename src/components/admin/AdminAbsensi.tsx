@@ -4,10 +4,10 @@ import { supabase } from '../../lib/supabase';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, Save } from 'lucide-react';
 import type { Student } from '../../data';
+import { toast } from 'sonner';
 
 interface AttendanceRecord {
   id?: string;
@@ -26,13 +26,6 @@ export const AdminAbsensi: React.FC = () => {
   const [exportRange, setExportRange] = useState('day');
 
   const isOwnClass = !teacherClass || selectedClass === teacherClass;
-  const alertRef = React.useRef<HTMLDialogElement>(null);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,9 +112,9 @@ export const AdminAbsensi: React.FC = () => {
         
       if (error) {
         console.error('Error saving attendance:', error);
-        showAlert('Gagal menyimpan absensi.');
+        toast.error('Gagal menyimpan absensi.');
       } else {
-        showAlert('Absensi berhasil disimpan!');
+        toast.success('Absensi berhasil disimpan!');
       }
     }
     
@@ -152,7 +145,7 @@ export const AdminAbsensi: React.FC = () => {
     setIsLoading(false);
 
     if (!attData || attData.length === 0) {
-      showAlert('Tidak ada data absensi untuk rentang waktu ini.');
+      toast.error('Tidak ada data absensi untuk rentang waktu ini.');
       return;
     }
 
@@ -160,7 +153,7 @@ export const AdminAbsensi: React.FC = () => {
     const filteredData = attData.filter(d => d.students?.class_name === selectedClass);
 
     if (filteredData.length === 0) {
-      showAlert('Tidak ada data absensi untuk rentang waktu ini di kelas ini.');
+      toast.error('Tidak ada data absensi untuk rentang waktu ini di kelas ini.');
       return;
     }
 
@@ -289,14 +282,6 @@ export const AdminAbsensi: React.FC = () => {
           </Button>
         </div>
       </CardContent>
-
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border-0 m-auto">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6 text-muted-foreground">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
     </Card>
   );
 };

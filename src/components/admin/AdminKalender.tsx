@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppContext } from '../../context';
+import { toast } from 'sonner';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface EventData {
   id?: string;
@@ -27,16 +29,7 @@ export const AdminKalender: React.FC = () => {
   const isSuperAdmin = !teacherClass;
   const isOwnClass = isSuperAdmin || selectedClass === teacherClass;
 
-  const dialogRef = React.useRef<HTMLDialogElement>(null);
-  const alertRef = React.useRef<HTMLDialogElement>(null);
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
-  };
-
 
   useEffect(() => {
     if (selectedClass) {
@@ -78,18 +71,17 @@ export const AdminKalender: React.FC = () => {
 
   const confirmDelete = (id: string) => {
     setEventToDelete(id);
-    dialogRef.current?.showModal();
   };
 
   const executeDelete = async () => {
     if (!eventToDelete) return;
     const { error } = await supabase.from('events').delete().eq('id', eventToDelete);
     if (error) {
-      showAlert('Gagal menghapus acara: ' + error.message);
+      toast.error('Gagal menghapus acara: ' + error.message);
     } else {
+      toast.success('Acara berhasil dihapus!');
       fetchEvents();
     }
-    dialogRef.current?.close();
     setEventToDelete(null);
   };
 
@@ -111,9 +103,10 @@ export const AdminKalender: React.FC = () => {
         })
         .eq('id', editingEvent.id);
 
-      if (error) showAlert('Gagal memperbarui data: ' + error.message);
-      else {
-        showAlert('Data berhasil diperbarui!');
+      if (error) {
+        toast.error('Gagal memperbarui data: ' + error.message);
+      } else {
+        toast.success('Data berhasil diperbarui!');
         setEditingEvent(null);
         fetchEvents();
       }
@@ -130,9 +123,10 @@ export const AdminKalender: React.FC = () => {
           class_name: isGlobal ? 'Semua Kelas' : selectedClass,
         }]);
 
-      if (error) showAlert('Gagal menambahkan data: ' + error.message);
-      else {
-        showAlert('Data berhasil ditambahkan!');
+      if (error) {
+        toast.error('Gagal menambahkan data: ' + error.message);
+      } else {
+        toast.success('Data berhasil ditambahkan!');
         setEditingEvent(null);
         fetchEvents();
       }
@@ -261,22 +255,20 @@ export const AdminKalender: React.FC = () => {
         </div>
       </CardContent>
 
-      <dialog ref={dialogRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Konfirmasi Hapus</h3>
-        <p className="mb-6">Apakah Anda yakin ingin menghapus acara ini?</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => dialogRef.current?.close()}>Batal</Button>
-          <Button variant="destructive" onClick={executeDelete}>Hapus</Button>
-        </div>
-      </dialog>
-
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
+      <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus acara ini? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Hapus Acara</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

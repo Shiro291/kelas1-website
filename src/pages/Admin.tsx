@@ -12,9 +12,13 @@ import { AdminBeranda } from '../components/admin/AdminBeranda';
 import { AdminSiswa } from '../components/admin/AdminSiswa';
 import { AdminKalender } from '../components/admin/AdminKalender';
 import { AdminAbsensi } from '../components/admin/AdminAbsensi';
+import { AdminKelas } from '../components/admin/AdminKelas';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Joyride, type Step } from 'react-joyride';
 import { HelpCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Profile {
   id: string;
@@ -24,7 +28,7 @@ interface Profile {
 }
 
 export const Admin: React.FC = () => {
-  const { t, isLoading, availableClasses } = useAppContext();
+  const { t, isLoading, availableClasses, selectedClass, setSelectedClass } = useAppContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
@@ -40,14 +44,10 @@ export const Admin: React.FC = () => {
   const [newClass, setNewClass] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const alertRef = React.useRef<HTMLDialogElement>(null);
-  const confirmRef = React.useRef<HTMLDialogElement>(null);
-  const [alertMessage, setAlertMessage] = useState('');
   const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
 
   const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
+    toast(msg);
   };
 
   useEffect(() => {
@@ -153,7 +153,6 @@ export const Admin: React.FC = () => {
 
   const confirmDeleteAction = (id: string) => {
     setProfileToDelete(id);
-    confirmRef.current?.showModal();
   };
 
   const executeDelete = async () => {
@@ -163,14 +162,13 @@ export const Admin: React.FC = () => {
     const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(profileToDelete);
     
     if (authError) {
-      showAlert('Gagal menghapus profil dari Auth: ' + authError.message);
+      toast.error('Gagal menghapus profil dari Auth: ' + authError.message);
     } else {
       // Supabase profiles table usually deletes via cascade, but we can do it explicitly just in case or fetch directly
       fetchProfiles();
-      showAlert('Akun pengguna berhasil dihapus sepenuhnya!');
+      toast.success('Akun pengguna berhasil dihapus sepenuhnya!');
     }
     
-    confirmRef.current?.close();
     setProfileToDelete(null);
   };
 
@@ -260,20 +258,32 @@ export const Admin: React.FC = () => {
         }}
       />
       
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
         <div>
           <h2 className="text-lg font-bold text-primary">Super Admin Dashboard</h2>
           <p className="text-sm text-green-600 font-medium">Anda memiliki akses penuh ke seluruh kelas dan akun.</p>
         </div>
-        <Button variant="outline" size="icon" onClick={() => setRunTutorial(true)} title="Mulai Tutorial">
-          <HelpCircle className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select value={selectedClass} onValueChange={setSelectedClass}>
+            <SelectTrigger className="w-[200px] bg-background">
+              <SelectValue placeholder="Pilih Kelas" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableClasses.map(c => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="icon" onClick={() => setRunTutorial(true)} title="Mulai Tutorial">
+            <HelpCircle className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="content" className="w-full tour-admin-tabs">
         <TabsList className="mb-4">
           <TabsTrigger value="content" className="tour-admin-content">Manajemen Konten & Kelas</TabsTrigger>
-          <TabsTrigger value="users" className="tour-admin-users">Manajemen Akun Guru</TabsTrigger>
+          <TabsTrigger value="users" className="tour-admin-users">Akun Guru & Daftar Kelas</TabsTrigger>
         </TabsList>
         
         <TabsContent value="content">
@@ -301,124 +311,135 @@ export const Admin: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
-          <div className="grid md:grid-cols-[300px_1fr] gap-6">
-            {/* Form Tambah Guru */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <UserPlus className="w-5 h-5 text-primary" /> Tambah Guru
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleCreateTeacher} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input 
-                      type="email" 
-                      value={newEmail} 
-                      onChange={e => setNewEmail(e.target.value)} 
-                      placeholder="guru_hatta@mudipas49.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Password Sementara</Label>
-                    <Input 
-                      type="text" 
-                      value={newPassword} 
-                      onChange={e => setNewPassword(e.target.value)} 
-                      placeholder="Minimal 6 karakter"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tugaskan ke Kelas</Label>
-                    <Input 
-                      list="class-list"
-                      value={newClass} 
-                      onChange={e => setNewClass(e.target.value)} 
-                      placeholder="Ketik atau pilih kelas..."
-                      required
-                    />
-                    <datalist id="class-list">
-                      {availableClasses.map(c => (
-                        <option key={c} value={c} />
-                      ))}
-                    </datalist>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isCreating}>
-                    {isCreating ? 'Membuat...' : 'Buat Akun'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+            <Tabs defaultValue="teachers" className="col-span-1 md:col-span-2 w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="teachers">Akun Guru</TabsTrigger>
+                <TabsTrigger value="classes">Daftar Kelas</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="teachers" className="space-y-6">
+                <div className="grid md:grid-cols-[300px_1fr] gap-6">
+                  {/* Form Tambah Guru */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <UserPlus className="w-5 h-5 text-primary" /> Tambah Guru
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handleCreateTeacher} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input 
+                            type="email" 
+                            value={newEmail} 
+                            onChange={e => setNewEmail(e.target.value)} 
+                            placeholder="guru_hatta@mudipas49.com"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Password Sementara</Label>
+                          <Input 
+                            type="text" 
+                            value={newPassword} 
+                            onChange={e => setNewPassword(e.target.value)} 
+                            placeholder="Minimal 6 karakter"
+                            required
+                            minLength={6}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Tugaskan ke Kelas</Label>
+                          <Input 
+                            list="class-list"
+                            value={newClass} 
+                            onChange={e => setNewClass(e.target.value)} 
+                            placeholder="Ketik atau pilih kelas..."
+                            required
+                          />
+                          <datalist id="class-list">
+                            {availableClasses.map(c => (
+                              <option key={c} value={c} />
+                            ))}
+                          </datalist>
+                        </div>
+                        <Button type="submit" className="w-full" disabled={isCreating}>
+                          {isCreating ? 'Membuat...' : 'Buat Akun'}
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
 
-            {/* Daftar Akun */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Daftar Pengguna Sistem</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {loadingProfiles ? (
-                  <div className="text-center py-8" aria-live="polite" aria-busy="true">Memuat data...</div>
-                ) : profiles.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">Belum ada profil</div>
-                ) : (
-                  <div className="border rounded-md divide-y overflow-hidden">
-                    <div className="grid grid-cols-4 bg-muted/50 p-3 font-medium text-sm">
-                      <div className="col-span-2">Email</div>
-                      <div>Role / Kelas</div>
-                      <div className="text-right">Aksi</div>
-                    </div>
-                    <div className="divide-y max-h-[400px] overflow-y-auto">
-                      {profiles.map(p => (
-                        <div key={p.id} className="grid grid-cols-4 p-3 items-center text-sm hover:bg-slate-50">
-                          <div className="col-span-2 font-medium break-all">{p.email || p.id}</div>
-                          <div>
-                            {p.role === 'superadmin' ? (
-                              <Badge variant="destructive">Super Admin</Badge>
-                            ) : (
-                              <div className="flex flex-col items-start gap-1">
-                                <Badge variant="outline" className="text-blue-600 border-blue-600">Guru</Badge>
-                                <span className="text-xs text-muted-foreground">{p.class_name}</span>
-                              </div>
-                            )}
+                  {/* Daftar Akun */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Daftar Pengguna Sistem</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {loadingProfiles ? (
+                        <div className="text-center py-8" aria-live="polite" aria-busy="true">Memuat data...</div>
+                      ) : profiles.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">Belum ada profil</div>
+                      ) : (
+                        <div className="border rounded-md divide-y overflow-hidden">
+                          <div className="grid grid-cols-4 bg-muted/50 p-3 font-medium text-sm">
+                            <div className="col-span-2">Email</div>
+                            <div>Role / Kelas</div>
+                            <div className="text-right">Aksi</div>
                           </div>
-                          <div className="text-right">
-                            {p.role !== 'superadmin' && (
-                              <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => confirmDeleteAction(p.id)}>
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
+                          <div className="divide-y max-h-[400px] overflow-y-auto">
+                            {profiles.map(p => (
+                              <div key={p.id} className="grid grid-cols-4 p-3 items-center text-sm hover:bg-slate-50">
+                                <div className="col-span-2 font-medium break-all">{p.email || p.id}</div>
+                                <div>
+                                  {p.role === 'superadmin' ? (
+                                    <Badge variant="destructive">Super Admin</Badge>
+                                  ) : (
+                                    <div className="flex flex-col items-start gap-1">
+                                      <Badge variant="outline" className="text-blue-600 border-blue-600">Guru</Badge>
+                                      <span className="text-xs text-muted-foreground">{p.class_name}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-right">
+                                  {p.role !== 'superadmin' && (
+                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => confirmDeleteAction(p.id)}>
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="classes">
+                <AdminKelas />
+              </TabsContent>
+            </Tabs>
         </TabsContent>
       </Tabs>
 
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
-
-      <dialog ref={confirmRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95 max-w-md">
-        <h3 className="text-lg font-bold mb-4 text-destructive">Konfirmasi Hapus</h3>
-        <p className="mb-6 text-sm text-muted-foreground">Hapus profil guru ini? Akun guru ini akan dihapus secara permanen dari sistem dan mereka tidak akan bisa login lagi.</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => confirmRef.current?.close()}>Batal</Button>
-          <Button variant="destructive" onClick={executeDelete}>Hapus Permanen</Button>
-        </div>
-      </dialog>
+      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription>
+              Hapus profil guru ini? Akun guru ini akan dihapus secara permanen dari sistem dan mereka tidak akan bisa login lagi.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Hapus Permanen</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

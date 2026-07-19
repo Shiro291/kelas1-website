@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Student } from '../../data';
 import { useAppContext } from '../../context';
+import { toast } from 'sonner';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export const AdminSiswa: React.FC = () => {
   const { selectedClass, teacherClass } = useAppContext();
@@ -16,15 +18,7 @@ export const AdminSiswa: React.FC = () => {
 
   const isOwnClass = !teacherClass || selectedClass === teacherClass;
   
-  const dialogRef = React.useRef<HTMLDialogElement>(null);
-  const alertRef = React.useRef<HTMLDialogElement>(null);
   const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
-  };
   
   // New student state
   const [isAdding, setIsAdding] = useState(false);
@@ -56,7 +50,6 @@ export const AdminSiswa: React.FC = () => {
 
   const confirmDelete = (id: string) => {
     setStudentToDelete(id);
-    dialogRef.current?.showModal();
   };
 
   const executeDelete = async () => {
@@ -69,11 +62,11 @@ export const AdminSiswa: React.FC = () => {
       .eq('class_name', selectedClass);
       
     if (error) {
-      showAlert('Gagal menghapus siswa: ' + error.message);
+      toast.error('Gagal menghapus siswa: ' + error.message);
     } else {
+      toast.success('Siswa berhasil dihapus!');
       fetchStudents();
     }
-    dialogRef.current?.close();
     setStudentToDelete(null);
   };
 
@@ -91,9 +84,9 @@ export const AdminSiswa: React.FC = () => {
       .eq('id', editingStudent.id);
 
     if (error) {
-      showAlert('Gagal menyimpan data: ' + error.message);
+      toast.error('Gagal menyimpan data: ' + error.message);
     } else {
-      showAlert('Data siswa berhasil disimpan!');
+      toast.success('Data siswa berhasil disimpan!');
       setEditingStudent(null);
       fetchStudents();
     }
@@ -115,9 +108,9 @@ export const AdminSiswa: React.FC = () => {
       }]);
 
     if (error) {
-      showAlert('Gagal menambah siswa: ' + error.message);
+      toast.error('Gagal menambah siswa: ' + error.message);
     } else {
-      showAlert('Siswa berhasil ditambahkan!');
+      toast.success('Siswa berhasil ditambahkan!');
       setIsAdding(false);
       setNewStudent({ name: '', id: '' });
       fetchStudents();
@@ -234,22 +227,20 @@ export const AdminSiswa: React.FC = () => {
         </div>
       </CardContent>
 
-      <dialog ref={dialogRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Konfirmasi Hapus</h3>
-        <p className="mb-6">Apakah Anda yakin ingin menghapus siswa ini dari kelas?</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => dialogRef.current?.close()}>Batal</Button>
-          <Button variant="destructive" onClick={executeDelete}>Hapus</Button>
-        </div>
-      </dialog>
-
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
+      <AlertDialog open={!!studentToDelete} onOpenChange={(open) => !open && setStudentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus siswa ini dari kelas? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Hapus Siswa</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

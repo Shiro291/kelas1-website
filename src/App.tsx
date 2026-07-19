@@ -9,6 +9,7 @@ import { Teacher } from './pages/Teacher';
 import { Tutorial } from './components/Tutorial';
 import { PublicLayout } from './layouts/PublicLayout';
 import { DashboardLayout } from './layouts/DashboardLayout';
+import { Toaster } from 'sonner';
 
 const AppContent: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const AppContent: React.FC = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Tutorial />
+      <Toaster position="top-center" richColors />
     </Router>
   );
 };

@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { AlertCircle, HelpCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Joyride, type Step } from 'react-joyride';
+import { toast } from 'sonner';
 
 import { AdminBeranda } from '../components/admin/AdminBeranda';
 import { AdminSiswa } from '../components/admin/AdminSiswa';
@@ -24,12 +25,8 @@ export const Teacher: React.FC = () => {
   const [runTutorial, setRunTutorial] = useState(false);
   const [activeTab, setActiveTab] = useState('beranda');
 
-  const alertRef = React.useRef<HTMLDialogElement>(null);
-  const [alertMessage, setAlertMessage] = useState('');
-
   const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
+    toast(msg);
   };
 
   const handleTabChange = (value: string) => {
@@ -228,14 +225,6 @@ export const Teacher: React.FC = () => {
           <AdminAbsensi />
         </TabsContent>
       </Tabs>
-
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { CalendarDays } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const AdminBeranda: React.FC = () => {
   const { t, data, setData, selectedDate, setSelectedDate, selectedClass, teacherClass } = useAppContext();
@@ -13,14 +14,6 @@ export const AdminBeranda: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const isOwnClass = !teacherClass || selectedClass === teacherClass;
-
-  const alertRef = React.useRef<HTMLDialogElement>(null);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  const showAlert = (msg: string) => {
-    setAlertMessage(msg);
-    alertRef.current?.showModal();
-  };
 
   useEffect(() => {
     setFormData(data);
@@ -32,7 +25,7 @@ export const AdminBeranda: React.FC = () => {
     setIsSaving(true);
     await setData(formData);
     setIsSaving(false);
-    showAlert('Data beranda berhasil disimpan!');
+    toast.success('Data beranda berhasil disimpan!');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -97,14 +90,6 @@ export const AdminBeranda: React.FC = () => {
           )}
         </form>
       </CardContent>
-
-      <dialog ref={alertRef} className="p-6 rounded-lg shadow-xl backdrop:bg-black/50 border border-border bg-background text-foreground open:animate-in open:fade-in-90 open:zoom-in-95">
-        <h3 className="text-lg font-bold mb-4">Informasi</h3>
-        <p className="mb-6">{alertMessage}</p>
-        <div className="flex justify-end">
-          <Button onClick={() => alertRef.current?.close()}>Tutup</Button>
-        </div>
-      </dialog>
     </Card>
   );
 };

@@ -75,20 +75,27 @@ export const Roster: React.FC = () => {
                   </Avatar>
                   <h3 className="font-semibold text-lg mb-1">{s.name}</h3>
                   {attendances[s.id] && (
-                    <Badge 
-                      variant={
-                        attendances[s.id].status === 'hadir' ? 'default' : 
-                        attendances[s.id].status === 'sakit' ? 'secondary' : 
-                        attendances[s.id].status === 'izin' ? 'outline' : 'destructive'
-                      }
-                      className={
-                        attendances[s.id].status === 'hadir' ? 'bg-green-500 mb-2' :
-                        attendances[s.id].status === 'sakit' ? 'bg-blue-500 text-white mb-2' :
-                        attendances[s.id].status === 'izin' ? 'bg-yellow-500 text-white border-none mb-2' : 'mb-2'
-                      }
-                    >
-                      {attendances[s.id].status.charAt(0).toUpperCase() + attendances[s.id].status.slice(1)}
-                    </Badge>
+                    <div className="flex flex-col items-center mb-2">
+                      <Badge 
+                        variant={
+                          attendances[s.id].status === 'masuk' ? 'default' : 
+                          attendances[s.id].status === 'sakit' ? 'secondary' : 
+                          attendances[s.id].status === 'izin' ? 'outline' : 'destructive'
+                        }
+                        className={
+                          attendances[s.id].status === 'masuk' ? 'bg-green-500' :
+                          attendances[s.id].status === 'sakit' ? 'bg-blue-500 text-white' :
+                          attendances[s.id].status === 'izin' ? 'bg-yellow-500 text-white border-none' : ''
+                        }
+                      >
+                        {attendances[s.id].status.charAt(0).toUpperCase() + attendances[s.id].status.slice(1)}
+                      </Badge>
+                      {attendances[s.id].notes && attendances[s.id].status !== 'masuk' && (
+                        <span className="text-xs text-muted-foreground mt-1 italic">
+                          "{attendances[s.id].notes}"
+                        </span>
+                      )}
+                    </div>
                   )}
                   
                   <div className="flex flex-col gap-2 w-full text-sm mt-1 text-left">

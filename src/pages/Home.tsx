@@ -47,11 +47,14 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center p-8 animate-pulse text-muted-foreground">Memuat data...</div>
-      ) : (
-        <div className="step-home-cards grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="border-t-4 border-t-primary shadow-sm hover:shadow-md transition-shadow">
+      <div className="step-home-cards relative">
+        {isLoading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-xl">
+            <div className="animate-pulse font-medium text-muted-foreground">Memuat data...</div>
+          </div>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border-t-4 border-t-primary shadow-sm hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center gap-2 pb-2">
           <Calendar className="w-5 h-5 text-primary" />
           <CardTitle className="text-xl">{t.schedule}</CardTitle>
@@ -99,7 +102,7 @@ export const Home: React.FC = () => {
         </CardContent>
       </Card>
         </div>
-      )}
+      </div>
     </div>
   );
 };

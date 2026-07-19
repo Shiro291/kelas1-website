@@ -43,11 +43,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<string>('I. IR Soekarno');
   const [teacherClass, setTeacherClass] = useState<string | null>(null);
-  const [availableClasses, setAvailableClasses] = useState<string[]>([
-    'I. Siti Walidah', 'I. Ahmad Dahlan', 'I. IR Soekarno', 'II. AR. Fachruddin',
-    'II. Haedar Nasier', "III. Syafi'l Maarif", 'III. Buya Hamka', 'IV. Jendral Sudirman',
-    'IV. Siti Munjiah', 'V. KH. Mas Mansyur', 'V. Siti Bariah', 'VI. Din Syamsuddin', 'VI. Amien Rais'
-  ]);
+  const [availableClasses, setAvailableClasses] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const { data, error } = await supabase.from('classes').select('name').order('name');
+        if (!error && data && data.length > 0) {
+          const fetchedClasses = data.map((d: any) => d.name);
+          setAvailableClasses(fetchedClasses);
+        } else {
+          setAvailableClasses([
+            'I. Siti Walidah', 'I. Ahmad Dahlan', 'I. IR Soekarno', 'II. AR. Fachruddin',
+            'II. Haedar Nasier', "III. Syafi'l Maarif", 'III. Buya Hamka', 'IV. Jendral Sudirman',
+            'IV. Siti Munjiah', 'V. KH. Mas Mansyur', 'V. Siti Bariah', 'VI. Din Syamsuddin', 'VI. Amien Rais'
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+      }
+    };
+    fetchClasses();
+  }, []);
   
   // Format today as YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0];
@@ -91,27 +108,72 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
 
-    const fetchClasses = async () => {
+    fetchSchedule();
+  }, [selectedDate, selectedClass]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
       try {
-        const { data, error } = await supabase.from('profiles').select('class_name');
-        if (!error && data) {
-          const fetchedClasses = data.map(p => p.class_name).filter(Boolean) as string[];
-          const defaultClasses = [
-            'I. Siti Walidah', 'I. Ahmad Dahlan', 'I. IR Soekarno', 'II. AR. Fachruddin',
-            'II. Haedar Nasier', "III. Syafi'l Maarif", 'III. Buya Hamka', 'IV. Jendral Sudirman',
-            'IV. Siti Munjiah', 'V. KH. Mas Mansyur', 'V. Siti Bariah', 'VI. Din Syamsuddin', 'VI. Amien Rais'
-          ];
-          const uniqueClasses = Array.from(new Set([...defaultClasses, ...fetchedClasses]));
-          setAvailableClasses(uniqueClasses);
+        // Skip auth check during test rendering or SSR
+        if (typeof window === 'undefined') {
+          setIsLoading(false);
+          return;
+        }
+
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
+
+        if (session?.user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (error) {
+            console.error('Error fetching profile:', error);
+          } else if (data) {
+            setTeacherClass(data.class_name);
+            if (data.class_name) {
+              setSelectedClass(data.class_name);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error fetching classes:', error);
+        console.error('Auth initialization error:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchSchedule();
-    fetchClasses();
-  }, [selectedDate, selectedClass]);
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('class_name')
+          .eq('id', session.user.id)
+          .single();
+
+        if (data) {
+          setTeacherClass(data.class_name);
+          if (data.class_name) {
+            setSelectedClass(data.class_name);
+          }
+        }
+      } else {
+        setTeacherClass(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const setData = async (newData: ScheduleData) => {
     setLocalData(newData);
