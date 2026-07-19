@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { AdminBeranda } from '../components/admin/AdminBeranda';
 import { AdminSiswa } from '../components/admin/AdminSiswa';
 import { AdminKalender } from '../components/admin/AdminKalender';
+import { AdminAbsensi } from '../components/admin/AdminAbsensi';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Joyride, type Step } from 'react-joyride';
 import { HelpCircle } from 'lucide-react';
@@ -277,22 +278,26 @@ export const Admin: React.FC = () => {
         
         <TabsContent value="content">
           {/* Use Teacher Dashboard components but since Super Admin can change selectedClass, they can edit any class */}
-          <Tabs defaultValue="beranda" className="w-full">
-            <TabsList className="mb-4 bg-muted/50 p-1">
-              <TabsTrigger value="beranda">Highlight Kegiatan</TabsTrigger>
-              <TabsTrigger value="jadwal">Jadwal & Info</TabsTrigger>
-              <TabsTrigger value="siswa">Data Siswa</TabsTrigger>
-            </TabsList>
-            <TabsContent value="beranda" className="space-y-4">
-              <AdminBeranda />
-            </TabsContent>
-            <TabsContent value="jadwal" className="space-y-4">
-              <AdminKalender />
-            </TabsContent>
-            <TabsContent value="siswa" className="space-y-4">
-              <AdminSiswa />
-            </TabsContent>
-          </Tabs>
+            <Tabs defaultValue="beranda" className="w-full">
+              <TabsList className="mb-4 bg-muted/50 p-1">
+                <TabsTrigger value="beranda">Highlight Kegiatan</TabsTrigger>
+                <TabsTrigger value="jadwal">Jadwal & Info</TabsTrigger>
+                <TabsTrigger value="siswa">Data Siswa</TabsTrigger>
+                <TabsTrigger value="absensi">Absensi</TabsTrigger>
+              </TabsList>
+              <TabsContent value="beranda" className="space-y-4">
+                <AdminBeranda />
+              </TabsContent>
+              <TabsContent value="jadwal" className="space-y-4">
+                <AdminKalender />
+              </TabsContent>
+              <TabsContent value="siswa" className="space-y-4">
+                <AdminSiswa />
+              </TabsContent>
+              <TabsContent value="absensi" className="space-y-4">
+                <AdminAbsensi />
+              </TabsContent>
+            </Tabs>
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">

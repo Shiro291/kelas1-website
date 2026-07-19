@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 export const Roster: React.FC = () => {
   const { t, selectedClass } = useAppContext();
   const [students, setStudents] = useState<Student[]>([]);
+  const [attendances, setAttendances] = useState<Record<number, { status: string; notes: string }>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,9 +25,30 @@ export const Roster: React.FC = () => {
         
         if (data && !error) {
           setStudents(data as Student[]);
+          
+          // Fetch today's attendance
+          const today = new Date();
+          const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+          
+          const studentIds = data.map(s => s.id);
+          if (studentIds.length > 0) {
+            const { data: attendanceData, error: attendanceError } = await supabase
+              .from('attendance')
+              .select('*')
+              .in('student_id', studentIds)
+              .eq('date', todayStr);
+              
+            if (attendanceData && !attendanceError) {
+              const attendanceMap: Record<number, { status: string; notes: string }> = {};
+              attendanceData.forEach(record => {
+                attendanceMap[record.student_id] = { status: record.status, notes: record.notes };
+              });
+              setAttendances(attendanceMap);
+            }
+          }
         }
       } catch (err) {
-        console.error('Failed to fetch students:', err);
+        console.error('Failed to fetch data:', err);
       } finally {
         setIsLoading(false);
       }
@@ -38,23 +60,11 @@ export const Roster: React.FC = () => {
     return <div className="flex justify-center p-8">Memuat daftar siswa...</div>;
   }
 
-  const dummyStudent: Student = {
-    id: 9999,
-    name: "(Demo) Siswa Prototype",
-    phone: "081234567890",
-    photo: "https://images.unsplash.com/photo-1519340333755-56e9c1d04079?w=400&q=80",
-    birthday: "17 Agustus 2019",
-    hobby: "Membaca & Menggambar",
-    notes: "Dummy student"
-  };
-
-  const displayStudents = [...students, dummyStudent];
-
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6 text-primary">{t.roster}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {displayStudents.map(s => (
+        {students.map(s => (
           <Dialog key={s.id}>
             <DialogTrigger asChild>
               <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
@@ -63,9 +73,25 @@ export const Roster: React.FC = () => {
                     <AvatarImage src={s.photo || ''} alt={s.name} className="object-cover" />
                     <AvatarFallback className="rounded-lg text-2xl font-bold bg-muted text-muted-foreground">3x4</AvatarFallback>
                   </Avatar>
-                  <h3 className="font-semibold text-lg mb-2">{s.name}</h3>
+                  <h3 className="font-semibold text-lg mb-1">{s.name}</h3>
+                  {attendances[s.id] && (
+                    <Badge 
+                      variant={
+                        attendances[s.id].status === 'hadir' ? 'default' : 
+                        attendances[s.id].status === 'sakit' ? 'secondary' : 
+                        attendances[s.id].status === 'izin' ? 'outline' : 'destructive'
+                      }
+                      className={
+                        attendances[s.id].status === 'hadir' ? 'bg-green-500 mb-2' :
+                        attendances[s.id].status === 'sakit' ? 'bg-blue-500 text-white mb-2' :
+                        attendances[s.id].status === 'izin' ? 'bg-yellow-500 text-white border-none mb-2' : 'mb-2'
+                      }
+                    >
+                      {attendances[s.id].status.charAt(0).toUpperCase() + attendances[s.id].status.slice(1)}
+                    </Badge>
+                  )}
                   
-                  <div className="flex flex-col gap-2 w-full text-sm mt-2 text-left">
+                  <div className="flex flex-col gap-2 w-full text-sm mt-1 text-left">
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-muted-foreground" />
                       {s.phone === 'Mutasi' ? (

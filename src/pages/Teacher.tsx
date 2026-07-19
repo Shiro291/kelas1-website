@@ -12,6 +12,7 @@ import { Joyride, type Step } from 'react-joyride';
 import { AdminBeranda } from '../components/admin/AdminBeranda';
 import { AdminSiswa } from '../components/admin/AdminSiswa';
 import { AdminKalender } from '../components/admin/AdminKalender';
+import { AdminAbsensi } from '../components/admin/AdminAbsensi';
 
 export const Teacher: React.FC = () => {
   const { t, isLoading, setSelectedClass, teacherClass, setTeacherClass, selectedClass } = useAppContext();
@@ -59,6 +60,10 @@ export const Teacher: React.FC = () => {
       content: role === 'superadmin' 
         ? 'Di Kalender Akademik, Anda dapat menambah atau menghapus agenda. Sebagai Super Admin, Anda bisa mencentang "Berlaku untuk Semua Kelas (Global)".'
         : 'Di Kalender Akademik, Anda dapat menambah, mengedit atau menghapus agenda penting. Agenda ini akan muncul di kalender orang tua.',
+    },
+    {
+      target: '.tour-absensi',
+      content: 'Di fitur Absensi, Anda dapat memantau kehadiran siswa setiap harinya dan memberi keterangan Hadir, Sakit, Izin, atau Alpa.',
     }
   ];
 
@@ -200,10 +205,11 @@ export const Teacher: React.FC = () => {
       </div>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full tour-tabs">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="beranda" className="tour-beranda">Beranda Harian</TabsTrigger>
           <TabsTrigger value="siswa" className="tour-siswa">Data & Raport Siswa</TabsTrigger>
           <TabsTrigger value="kalender" className="tour-kalender">Kalender Akademik</TabsTrigger>
+          <TabsTrigger value="absensi" className="tour-absensi">Absensi</TabsTrigger>
         </TabsList>
         
         <TabsContent value="beranda">
@@ -216,6 +222,10 @@ export const Teacher: React.FC = () => {
         
         <TabsContent value="kalender">
           <AdminKalender />
+        </TabsContent>
+
+        <TabsContent value="absensi">
+          <AdminAbsensi />
         </TabsContent>
       </Tabs>
 
