@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { supabase } from '../../lib/supabase';
 import { Plus, Trash2, Users } from 'lucide-react';
-import { useAppContext } from '../../context';
+
 import { toast } from 'sonner';
 
 interface ClassData {
