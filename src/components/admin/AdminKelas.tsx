@@ -32,7 +32,6 @@ export const AdminKelas: React.FC = () => {
   const [classToDelete, setClassToDelete] = useState<{id: string, name: string} | null>(null);
   
   // Need to force context update after creating a class so the Navbar dropdown updates
-  const { availableClasses } = useAppContext();
 
   const fetchData = async () => {
     setIsLoading(true);
