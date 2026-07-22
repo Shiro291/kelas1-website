@@ -5,14 +5,19 @@ import type { Student } from '../data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Phone, Calendar, Heart } from 'lucide-react';
+import { Phone, Calendar, Heart, CalendarDays } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 export const Roster: React.FC = () => {
   const { t, selectedClass } = useAppContext();
   const [students, setStudents] = useState<Student[]>([]);
   const [attendances, setAttendances] = useState<Record<number, { status: string; notes: string }>>({});
   const [isLoading, setIsLoading] = useState(true);
+  
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  const [attendanceDate, setAttendanceDate] = useState(todayStr);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -26,17 +31,14 @@ export const Roster: React.FC = () => {
         if (data && !error) {
           setStudents(data as Student[]);
           
-          // Fetch today's attendance
-          const today = new Date();
-          const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-          
+          // Fetch attendance for selected date
           const studentIds = data.map(s => s.id);
           if (studentIds.length > 0) {
             const { data: attendanceData, error: attendanceError } = await supabase
               .from('attendance')
               .select('*')
               .in('student_id', studentIds)
-              .eq('date', todayStr);
+              .eq('date', attendanceDate);
               
             if (attendanceData && !attendanceError) {
               const attendanceMap: Record<number, { status: string; notes: string }> = {};
@@ -44,6 +46,8 @@ export const Roster: React.FC = () => {
                 attendanceMap[record.student_id] = { status: record.status, notes: record.notes };
               });
               setAttendances(attendanceMap);
+            } else {
+              setAttendances({});
             }
           }
         }
@@ -54,7 +58,7 @@ export const Roster: React.FC = () => {
       }
     };
     fetchStudents();
-  }, [selectedClass]);
+  }, [selectedClass, attendanceDate]);
 
   if (isLoading) {
     return <div className="flex justify-center p-8">Memuat daftar siswa...</div>;
@@ -62,7 +66,18 @@ export const Roster: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6 text-primary">{t.roster}</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h2 className="text-2xl font-bold text-primary">{t.roster}</h2>
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-5 h-5 text-muted-foreground" />
+          <Input 
+            type="date"
+            value={attendanceDate} 
+            onChange={e => setAttendanceDate(e.target.value)} 
+            className="w-auto shadow-sm"
+          />
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {students.map(s => (
           <Dialog key={s.id}>

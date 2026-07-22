@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Save } from 'lucide-react';
+import { Download, Save, CalendarDays } from 'lucide-react';
 import type { Student } from '../../data';
 import { toast } from 'sonner';
 
@@ -18,7 +18,7 @@ interface AttendanceRecord {
 }
 
 export const AdminAbsensi: React.FC = () => {
-  const { selectedDate, selectedClass, teacherClass } = useAppContext();
+  const { selectedDate, setSelectedDate, selectedClass, teacherClass } = useAppContext();
   const [students, setStudents] = useState<Student[]>([]);
   const [attendance, setAttendance] = useState<Record<number, AttendanceRecord>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -182,8 +182,19 @@ export const AdminAbsensi: React.FC = () => {
 
   return (
     <Card className="shadow-sm border-t-4 border-t-green-500">
-      <CardHeader className="flex flex-row justify-between items-center pb-2">
-        <CardTitle className="text-xl text-green-600">Absensi Siswa</CardTitle>
+      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 gap-4">
+        <div className="flex flex-col gap-1">
+          <CardTitle className="text-xl text-green-600">Absensi Siswa</CardTitle>
+          <div className="flex items-center gap-2 mt-2">
+            <CalendarDays className="w-4 h-4 text-muted-foreground" />
+            <Input 
+              type="date"
+              value={selectedDate} 
+              onChange={e => setSelectedDate(e.target.value)} 
+              className="h-8 w-auto text-sm"
+            />
+          </div>
+        </div>
         <div className="flex gap-2 items-center">
           <Select value={exportRange} onValueChange={setExportRange}>
             <SelectTrigger className="w-[120px]">
