@@ -17,6 +17,25 @@ interface AttendanceRecord {
   notes: string;
 }
 
+const getWaliKelasData = (className: string) => {
+  const waliMap: Record<string, { name: string, nbm?: string }> = {
+    'I Ahmad Dahlan': { name: 'Jurahmin, S.Pd.I., Gr.' },
+    'I Ir. Soekarno': { name: 'Fathan Faqih Ali, S.Pd' },
+    'I Siti Walidah': { name: 'Aprillia Reva Ferawati, S.Ap' },
+    'II Ar. Fachruddin': { name: 'Sartriwati' },
+    'II Haedar Nashir': { name: 'Ria Yusiati, S.Pd.Gr', nbm: '1422710' },
+    'II Siti Munjiah': { name: 'Didin Rosidin' },
+    'III Buya Hamka': { name: 'Najwa Apriliani Azahra, S.Pd' },
+    "III Syafi'i Maarif": { name: 'Sri Muzdalifah, S.Ag.Gr' },
+    'IV Jendral Sudirman': { name: 'Shinta Octavia, S.S.,Gr' },
+    'V KH. Mas Mansyur': { name: 'Sekar Ajeng Resti Octaviana, S.Pd.Gr' },
+    'V Siti Bariah': { name: 'Dewi Kusumawati, S.Pd.Gr' },
+    'VI Amien Rais': { name: 'Rima Kusumandari, S.Pd.Gr' },
+    'VI Din Syamsuddin': { name: 'Sahara Tuti, S.Pd.Gr' }
+  };
+  return waliMap[className] || { name: 'Wali Kelas' };
+};
+
 export const AdminAbsensi: React.FC = () => {
   const { selectedDate, setSelectedDate, selectedClass, teacherClass } = useAppContext();
   const [students, setStudents] = useState<Student[]>([]);
@@ -158,7 +177,7 @@ export const AdminAbsensi: React.FC = () => {
     }
 
     const headers = ['Tanggal', 'Nama Siswa', 'Kelas', 'Status', 'Keterangan', 'Waktu Tercatat'];
-    const csvContent = [
+    const tableContent = [
       headers.join(','),
       ...filteredData.map(record => [
         record.date,
@@ -169,6 +188,17 @@ export const AdminAbsensi: React.FC = () => {
         new Date(record.created_at).toLocaleString()
       ].join(','))
     ].join('\n');
+
+    const waliData = getWaliKelasData(selectedClass);
+    const dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    let signatureRows = `\n\n\nKeterangan :\n\n`;
+    signatureRows += `Mengetahui,,,,Jakarta, ${dateStr}\n`;
+    signatureRows += `Kepala Sekolah,,,,Wali Kelas\n\n\n\n`;
+    signatureRows += `(Arief Khairul Huda, S.Pd.I, M.Pd),,,,( ${waliData.name} )\n`;
+    signatureRows += `NBM. 1371212,,,,NBM. ${waliData.nbm || '______________'}\n`;
+
+    const csvContent = tableContent + signatureRows;
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
